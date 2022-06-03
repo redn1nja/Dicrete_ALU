@@ -18,13 +18,12 @@ class Person:
 
     def __init__(self, age, coordinates, state):
         self.age = age
-        # self.region = region
-        self.coordinates = coordinates
-        # self.parents = ukrlang_parents
+        self.coordinates = coordinates # (y,x) for the position on the grid
         self.state = state
+        self.transition_prob = 0 # 1 for more possible transition to proukrainian, -1 for transition to prorussian, 
 
     def __str__(self) -> str:
-        return f'Person({self.age}, {self.coordinates}) is {self.lang} speaker'
+        return f'Person({self.age}, {self.coordinates}) is in {self.state} state'
     
     def __repr__(self) -> str:
         return self.state
