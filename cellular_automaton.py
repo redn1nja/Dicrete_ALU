@@ -10,7 +10,7 @@ class CellularAutomaton:
 
     def __init__(self, width, height, ua_percentage, youth_percentage, adult_percentage, fill):
         self._grid = np.array([[Person(self.generate_age(youth_percentage, adult_percentage), (j, i), self.generage_state(
-            ua_percentage)) if random.random() <= fill else None for i in width] for j in height])
+            ua_percentage)) if random.random() <= fill else None for i in range(width)] for j in range(height)])
 
     @staticmethod
     def generate_age(prob_y, prob_a):
@@ -28,4 +28,7 @@ class CellularAutomaton:
         if random.random() <= prob:
             return random.choice(states_ukr)
         return random.choice(states_negative)
-    
+
+
+a = CellularAutomaton(10, 10, 0.5, 0.5, 0.2, 0.5)
+print(a._grid)

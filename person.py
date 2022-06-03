@@ -11,6 +11,6 @@ class Person:
         return f'Person({self.age}, {self.coordinates}) is {self.lang} speaker'
     
     def __repr__(self) -> str:
-        return self.lang
+        return self.state
     
 
