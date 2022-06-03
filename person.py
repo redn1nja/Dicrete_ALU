@@ -1,5 +1,21 @@
 
 class Person:
+    '''
+    Class that represents a single person
+
+    Possible states:
+        - active_ua
+        - passive_ua
+        - surzhyk
+        - passive_ru
+        - active_ru
+
+    Possible ages:
+        - youth (0)
+        - adult (1)
+        - senior (2)
+    '''
+
     def __init__(self, age, coordinates, state):
         self.age = age
         # self.region = region
