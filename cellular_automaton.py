@@ -56,6 +56,12 @@ class CellularAutomaton:
                         affect -= 0.125
         return affect
 
+    def evolve(self):
+        '''
+        Iterates over all the people in the system and changes their state according to the neighbours.
+        '''
+        pass
+
     def __repr__(self):
         return str(self._grid)
 

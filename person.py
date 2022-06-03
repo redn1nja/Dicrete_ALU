@@ -24,8 +24,13 @@ class Person:
 
     def __str__(self) -> str:
         return f'Person({self.age}, {self.coordinates}) is in {self.state} state'
+
+    def change_state(self):
+        '''
+        Updates transition_prob according to the neighbours.
+        Generates random.random and checks if the state can be changed.
+        '''
+        pass
     
     def __repr__(self) -> str:
         return self.state
-    
-
