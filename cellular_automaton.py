@@ -78,9 +78,10 @@ class CellularAutomaton:
                         break
                 except IndexError:
                     continue
-            move = random.choice(possible_moves)
-            self._grid[move[0], move[1]] = self._grid[x, y]
-            self._grid[x, y] = None
+            if possible_moves:
+                move = random.choice(possible_moves)
+                self._grid[move[0], move[1]] = self._grid[x, y]
+                self._grid[x, y] = None
 
     def evolve(self):
         '''
