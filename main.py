@@ -11,8 +11,7 @@ import numpy as np
 
 
 def main():
-    # ca = CellularAutomaton(30, 30, 0.6, 0.3, 0.3, 0.5)
-    ca = CellularAutomaton(5, 5, 0.5, 0.5, 0.2, 0.3)
+    ca = CellularAutomaton(30, 30, 0.6, 0.3, 0.3, 0.5)
     grid = ca.get_grid()
 
     fig, ax = plt.subplots()
@@ -28,22 +27,19 @@ def main():
 
     frames_data = list()
     for i in range(20):
-        frames_data.append(ca.get_grid())
+        frames_data.append(ca.get_grid().copy())
         ca.evolve()
 
     def animation(grid):
         states = [[grid[i,j].state if grid[i,j] else np.nan for j in range(grid.shape[1])] for i in range(grid.shape[0])]
         states = np.ma.array(states, mask=np.isnan(states))
-        # print(grid)
-        # print()
+        ax.clear()
         ax.imshow(states, cmap=cmap)
-        return
 
-    anim = FuncAnimation(fig, animation, frames=frames_data, interval=1000)
+    anim = FuncAnimation(fig, animation, frames=frames_data, interval=500)
 
     plt.show()
 
-    
 
 if __name__ == '__main__':
     main()
