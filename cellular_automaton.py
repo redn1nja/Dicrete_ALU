@@ -69,15 +69,18 @@ class CellularAutomaton:
         """
         moves the person at x, y to a nearby free cell
         """
+        possible_moves = []
         for i in range(-1, 2):
             for j in range(-1, 2):
                 try:
                     if self._grid[y+i, x+j] is None:
-                        self._grid[y+i, x+j] = self._grid[x, y]
-                        self._grid[x, y] = None
+                        possible_moves.append((y+i, x+j))
                         break
                 except IndexError:
                     continue
+            move = random.choice(possible_moves)
+            self._grid[move[0], move[1]] = self._grid[x, y]
+            self._grid[x, y] = None
 
     def evolve(self):
         '''
@@ -90,10 +93,10 @@ class CellularAutomaton:
                     person.transition_prob += \
                         self.get_neighbours_affect(*person.coordinates)
 
-        prob = random.random()
         for row in self._grid:
             for person in row:
                 if person is not None:
+                    prob = random.random()
                     person.change_state(prob)
                     if prob < 1/(2**(person.age+2)):
                         self.move(*person.coordinates)
