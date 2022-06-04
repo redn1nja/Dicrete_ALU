@@ -1,1 +1,1 @@
-# Dicrete_ALU
+# Language spread simulation
