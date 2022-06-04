@@ -100,10 +100,6 @@ class CellularAutomaton:
                 if person is not None:
                     prob = random.random()
                     person.change_state(prob)
-
-        for row in self._grid:
-            for person in row:
-                if person is not None:
                     prob = random.random()
                     if prob < 1/(2**(person.age+2)):
                         self.move(*person.coordinates)
@@ -116,9 +112,9 @@ class CellularAutomaton:
 
 
 if __name__ == "__main__":
-    a = CellularAutomaton(4, 5, 0.5, 0.5, 0.2, 0.7)
-    for i in range(10):
+    a = CellularAutomaton(40, 40, 0.5, 0.5, 0.2, 0.7)
+    for i in range(120):
         system("cls" if name == "nt" else "clear")
         print(a)
         a.evolve()
-        sleep(2)
+        sleep(0.2)
