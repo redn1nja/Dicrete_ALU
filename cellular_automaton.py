@@ -2,7 +2,7 @@ import numpy as np
 import random
 from person import Person
 from time import sleep
-from os import system
+from os import system, name
 
 
 class CellularAutomaton:
@@ -85,7 +85,7 @@ class CellularAutomaton:
 if __name__ == "__main__":
     a = CellularAutomaton(8, 8, 0.5, 0.5, 0.2, 0.5)
     for i in range(100):
-        system("clear")
+        system("cls" if name == "nt" else "clear")
         print(a)
         a.evolve()
         sleep(0.5)
