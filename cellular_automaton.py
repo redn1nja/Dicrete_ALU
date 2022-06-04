@@ -9,6 +9,9 @@ class CellularAutomaton:
     '''
     Class that represents a grid of people, who interact together and form a society.
     '''
+    AUTHORITY_MATRIX = [[1, 0.5, 0.25],
+                        [0.25, 0.5, 0.125],
+                        [0.0625, 0.125, 0.25]]
 
     def __init__(self, width, height, ua_percentage, youth_percentage,
                  adult_percentage, fill):
@@ -19,10 +22,10 @@ class CellularAutomaton:
     def generate_age(prob_y, prob_a):
         final_prob = random.random()
         if final_prob <= prob_y:
-            return 0
+            return Person.YOUTH
         if prob_y < final_prob < prob_y+prob_a:
-            return 1
-        return 2
+            return Person.ADULT
+        return Person.SENIOR
 
     @staticmethod
     def generage_state(prob):
@@ -45,11 +48,10 @@ class CellularAutomaton:
         affect = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if not (i == 0 and j == 0) and len(self._grid) > y+i >= 0\
-                        and len(self._grid[y+i]) > x+j >= 0:
-                    if self._grid[y + i, x + j] is None:
-                        continue
-
+                if not (i == 0 and j == 0)\
+                        and len(self._grid) > y+i >= 0\
+                        and len(self._grid[y+i]) > x+j >= 0\
+                        and self._grid[y + i, x + j] and self._grid[y, x]:
                     if self._grid[y + i, x + j].state == Person.ACTIVE_UA:
                         affect += 0.125
                     elif self._grid[y + i, x + j].state == Person.PASSIVE_UA:
@@ -58,7 +60,22 @@ class CellularAutomaton:
                         affect -= 0.0625
                     elif self._grid[y + i, x + j].state == Person.ACTIVE_RU:
                         affect -= 0.125
+                    affect *= 1 + self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age]
         return affect
+
+    def move(self, y, x):
+        """
+        moves the person at x, y to a nearby free cell
+        """
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                try:
+                    if self._grid[y+i, x+j] is None:
+                        self._grid[y+i, x+j] = self._grid[x, y]
+                        self._grid[x, y] = None
+                        break
+                except IndexError:
+                    continue
 
     def evolve(self):
         '''
@@ -71,12 +88,13 @@ class CellularAutomaton:
                     person.transition_prob += \
                         self.get_neighbours_affect(*person.coordinates)
 
-        # prob = random.random()
         prob = random.random()
         for row in self._grid:
             for person in row:
                 if person is not None:
                     person.change_state(prob)
+                    if prob < 1/(2**(person.age+2)):
+                        self.move(*person.coordinates)
 
     def __repr__(self):
         return str(self._grid)

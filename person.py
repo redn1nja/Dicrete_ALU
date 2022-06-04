@@ -26,12 +26,14 @@ class Person:
     ACTIVE_RU = 0
     TRANSITION_LIST = ["active_ru", "passive_ru", "surzhyk",
                        "passive_ua", "active_ua"]
+    YOUTH = 0
+    ADULT = 1
+    SENIOR = 2
 
     def __init__(self, age, coordinates, state):
         self.age = age
-        self.coordinates = coordinates  # (y,x) for the position on the grid
+        self.coordinates = coordinates
         self.state = state
-        # 1 for more possible transition to proukrainian, -1 for transition to prorussian,
         self.transition_prob = 0
 
     def __str__(self) -> str:
@@ -45,6 +47,7 @@ class Person:
             self.state += int(self.transition_prob / abs(self.transition_prob))
             self.state = self.ACTIVE_UA if self.state > self.ACTIVE_UA else self.state
             self.state = self.ACTIVE_RU if self.state < self.ACTIVE_RU else self.state
+            self.transition_prob = 0
 
     def __repr__(self) -> str:
         return self.TRANSITION_LIST[self.state]
