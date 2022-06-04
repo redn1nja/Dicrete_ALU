@@ -40,15 +40,16 @@ class CellularAutomaton:
 
     def get_clear_surroundings(self, y, x):
         set_of_coords = set()
-        for i in range(-1,2):
-            for j in range(-1,2):
+        for i in range(-1, 2):
+            for j in range(-1, 2):
                 if not (i == 0 and j == 0)\
                         and len(self._grid) > y+i >= 0\
                         and len(self._grid[y+i]) > x+j >= 0:
-                            if not self._grid[y+i,x+j]:
-                                set_of_coords.add((y+i, x+j))
+                    if not self._grid[y+i, x+j]:
+                        set_of_coords.add((y+i, x+j))
         # return {(y+i,x+j) for i in range(-1,2) if not self._grid[y+i,x+j] for j in range(-1,2)}
         return set_of_coords
+
     def get_neighbours_affect(self, y, x):
         '''
         Checks all the neighbours and returns the delta
@@ -59,12 +60,15 @@ class CellularAutomaton:
         active prorussian with -1.0 per step.
         '''
         affect = 0
+        num_neighbors = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if not (i == 0 and j == 0)\
                         and len(self._grid) > y+i >= 0\
                         and len(self._grid[y+i]) > x+j >= 0\
                         and self._grid[y + i, x + j] and self._grid[y, x]:
+                    num_neighbors += 1
+
                     if self._grid[y + i, x + j].state == Person.ACTIVE_UA:
                         affect += 0.125
                     elif self._grid[y + i, x + j].state == Person.PASSIVE_UA:
@@ -73,24 +77,26 @@ class CellularAutomaton:
                         affect -= 0.0625
                     elif self._grid[y + i, x + j].state == Person.ACTIVE_RU:
                         affect -= 0.125
-                    affect *= self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age]
+                    affect *= (1 + self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age])
+                    affect /= num_neighbors
                     self.marriage(y, y+i, x, x+j)
-                    
-                    
         return affect
 
     def marriage(self, y, y1, x, x1):
-        lang_delta = abs(self._grid[y,x].state - self._grid[y1,x1].state)+1
+        lang_delta = abs(self._grid[y, x].state - self._grid[y1, x1].state)+1
         chance_to_pair = 1/(15*lang_delta)
-        if random.random()<chance_to_pair and self._grid[y,x].age == 1 and self._grid[y1,x1].age == 1:
-            if not self._grid[y,x].infamily and not self._grid[y1,x1].infamily:
-                self._grid[y,x].infamily = True
-                self._grid[y1,x1].infamily = True
-                places_for_child = self.get_clear_surroundings(y,x).intersection(self.get_clear_surroundings(y1, x1))
+        if random.random() < chance_to_pair and self._grid[y, x].age == 1 and self._grid[y1, x1].age == 1:
+            if not self._grid[y, x].infamily and not self._grid[y1, x1].infamily:
+                self._grid[y, x].infamily = True
+                self._grid[y1, x1].infamily = True
+                places_for_child = self.get_clear_surroundings(
+                    y, x).intersection(self.get_clear_surroundings(y1, x1))
                 if places_for_child:
-                    child_lang = (self._grid[y,x].state + self._grid[y1, x1].state)//2
+                    child_lang = (
+                        self._grid[y, x].state + self._grid[y1, x1].state)//2
                     place = random.choice(list(places_for_child))
-                    self._grid[place[0],place[1]] = self.birth(place[0], place[1], child_lang)
+                    self._grid[place[0], place[1]] = self.birth(
+                        place[0], place[1], child_lang)
 
     def move(self, y, x):
         """
@@ -127,7 +133,7 @@ class CellularAutomaton:
                     y, x = coords[0], coords[1]
                     person.transition_prob += \
                         self.get_neighbours_affect(*person.coordinates)
-                    person.age_transition += 1 
+                    person.age_transition += 1
                     death = random.random()
                     if person.age == 0:
                         if death < young_death_prob:
@@ -141,15 +147,13 @@ class CellularAutomaton:
                             self.death(y, x)
                         if person.age_transition == 31:
                             person.age = 2
-                            person.age_transition = 0 
+                            person.age_transition = 0
                         continue
                     if person.age == 2:
-                        senior_death_prob +=0.001 #elders have bigger chance to die with each year. Sad reality
+                        # elders have bigger chance to die with each year. Sad reality
+                        senior_death_prob += 0.001
                         if death < senior_death_prob:
                             self.death(y, x)
-                        
-                    
-                    
 
         for row in self._grid:
             for person in row:
@@ -160,15 +164,14 @@ class CellularAutomaton:
                     if prob < 1/(2**(person.age+2)):
                         self.move(*person.coordinates)
 
-
     def birth(self, y, x, parent_lang):
         """
         Primitive example
         """
-        return Person(0, (y,x), parent_lang)
+        return Person(0, (y, x), parent_lang)
 
     def death(self, y, x):
-        self._grid[y,x] = None
+        self._grid[y, x] = None
 
     def __repr__(self):
         return "\n".join(" ".join(str(item) if
