@@ -107,6 +107,9 @@ class CellularAutomaton:
     def __repr__(self):
         return "\n".join(" ".join(str(item) if item else "empt" for item in row) for row in self._grid)
 
+    def get_grid(self):
+        return self._grid
+
 
 if __name__ == "__main__":
     a = CellularAutomaton(40, 40, 0.5, 0.5, 0.2, 0.7)
