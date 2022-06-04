@@ -1,8 +1,6 @@
 import numpy as np
 import random
 from person import Person
-from time import sleep
-from os import system, name
 
 
 class CellularAutomaton:
@@ -13,6 +11,8 @@ class CellularAutomaton:
     AUTHORITY_MATRIX = [[1, 0.5, 0.25],
                         [0.25, 0.5, 0.125],
                         [0.0625, 0.125, 0.25]]
+    BIRTHS = 0
+    DEATHS = 0
 
     def __init__(self, width, height, ua_percentage, youth_percentage,
                  adult_percentage, fill):
@@ -173,11 +173,13 @@ class CellularAutomaton:
         """
         Create a new Person with the language of parents
         """
-        print(f"new person at {y, x}")
+        # print(f"new person at {y, x}")
+        self.BIRTHS += 1
         return Person(Person.YOUTH, (y, x), parent_lang)
 
     def death(self, y, x):
-        print(f"death at {y, x}")
+        # print(f"death at {y, x}")
+        self.DEATHS += 1
         self._grid[y, x] = None
 
     def __repr__(self):
@@ -187,11 +189,3 @@ class CellularAutomaton:
     def get_grid(self):
         return self._grid
 
-
-if __name__ == "__main__":
-    a = CellularAutomaton(5, 2, 0.5, 0.5, 0.2, 0.7)
-    for i in range(120):
-        system("cls" if name == "nt" else "clear")
-        print(a)
-        a.evolve()
-        sleep(0.2)

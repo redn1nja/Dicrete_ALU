@@ -5,12 +5,18 @@ A module for matplotlib animated vizualization of the CA
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.patches as mpatches
 from cellular_automaton import CellularAutomaton
 import numpy as np
 
 
 def main():
-    ca = CellularAutomaton(160, 90, 0.5, 0.3, 0.5, 0.7)
+    grid_size = tuple(map(int, input("Enter grid size (e.g. 160 90): ").split()))
+    ua_percentage = float(input("Enter percentage of Ukrainian speakers (e.g 0.3): "))
+    age_dist = tuple(map(float, input("Enter respective percentages of youth and adults (e.g 0.3 0.5): ").split()))
+    fill = float(input("Enter fill percentage of the grid (e.g 0.8): "))
+    print("Plotting..")
+    ca = CellularAutomaton(*grid_size, ua_percentage, *age_dist, fill)
     grid = ca.get_grid()
 
     fig, ax = plt.subplots()
@@ -48,12 +54,18 @@ def main():
 
         states = np.ma.array(states, mask=np.isnan(states))
 
+        death_patch = mpatches.Patch(label=f"Deaths: {ca.DEATHS}")
+        birth_patch = mpatches.Patch(label=f"Births: {ca.BIRTHS}")
+
+        leg = None
+
+        leg = fig.legend(handles=[birth_patch, death_patch])
+
         ax.clear()
         ax.imshow(states, cmap=cmap)
 
     anim = FuncAnimation(fig, animation, frames=iterate(),
                          interval=0, repeat=False)
-
     plt.show()
 
 
