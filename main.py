@@ -2,6 +2,8 @@
 A module for matplotlib animated vizualization of the CA
 '''
 
+from time import sleep
+from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from cellular_automaton import CellularAutomaton
@@ -9,7 +11,8 @@ import numpy as np
 
 
 def main():
-    ca = CellularAutomaton(30, 30, 0.6, 0.3, 0.3, 0.5)
+    # ca = CellularAutomaton(30, 30, 0.6, 0.3, 0.3, 0.5)
+    ca = CellularAutomaton(5, 5, 0.5, 0.5, 0.2, 0.3)
     grid = ca.get_grid()
 
     fig, ax = plt.subplots()
@@ -22,6 +25,22 @@ def main():
     cbar = fig.colorbar(mappable=mappable, ax=ax, ticks=[i for i in range(5)])
     cbar.set_ticks([0.4 + 0.8 * i for i in range(5)], 
         labels=['active ru speaker','passive ru speaker','surzhyk-speaking','pasive ua speaker','active ua speaker'])
+
+    frames_data = list()
+    for i in range(20):
+        frames_data.append(ca.get_grid())
+        ca.evolve()
+
+    def animation(grid):
+        states = [[grid[i,j].state if grid[i,j] else np.nan for j in range(grid.shape[1])] for i in range(grid.shape[0])]
+        states = np.ma.array(states, mask=np.isnan(states))
+        # print(grid)
+        # print()
+        ax.imshow(states, cmap=cmap)
+        return
+
+    anim = FuncAnimation(fig, animation, frames=frames_data, interval=1000)
+
     plt.show()
 
     
