@@ -30,12 +30,12 @@ class Person:
     ADULT = 1
     SENIOR = 2
 
-    def __init__(self, age, coordinates, state):
-        self.age = age
+    def __init__(self, age_group, coordinates, state):
+        self.age_group = age_group
         self.coordinates = coordinates
         self.state = state
         self.transition_prob = 0
-        self.age_transition = 0 
+        self.age = 0
         self.infamily = False
 
     def get_coords(self):

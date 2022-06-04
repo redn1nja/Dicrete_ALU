@@ -47,7 +47,6 @@ class CellularAutomaton:
                         and len(self._grid[y+i]) > x+j >= 0:
                     if not self._grid[y+i, x+j]:
                         set_of_coords.add((y+i, x+j))
-        # return {(y+i,x+j) for i in range(-1,2) if not self._grid[y+i,x+j] for j in range(-1,2)}
         return set_of_coords
 
     def get_neighbours_affect(self, y, x):
@@ -77,7 +76,7 @@ class CellularAutomaton:
                         affect -= 0.0625
                     elif self._grid[y + i, x + j].state == Person.ACTIVE_RU:
                         affect -= 0.125
-                    affect *= (1 + self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age])
+                    affect *= (1 + self.AUTHORITY_MATRIX[self._grid[y, x].age_group][self._grid[y+i, x+j].age_group])
                     affect /= num_neighbors
                     self.marriage(y, y+i, x, x+j)
         return affect
@@ -85,16 +84,22 @@ class CellularAutomaton:
     def marriage(self, y, y1, x, x1):
         lang_delta = abs(self._grid[y, x].state - self._grid[y1, x1].state)+1
         chance_to_pair = 1/(15*lang_delta)
-        if random.random() < chance_to_pair and self._grid[y, x].age == 1 and self._grid[y1, x1].age == 1:
+
+        if random.random() < chance_to_pair and self._grid[y, x].age_group == Person.ADULT\
+                and self._grid[y1, x1].age_group == Person.ADULT:
+
             if not self._grid[y, x].infamily and not self._grid[y1, x1].infamily:
                 self._grid[y, x].infamily = True
                 self._grid[y1, x1].infamily = True
+
                 places_for_child = self.get_clear_surroundings(
                     y, x).intersection(self.get_clear_surroundings(y1, x1))
+
                 if places_for_child:
                     child_lang = (
                         self._grid[y, x].state + self._grid[y1, x1].state)//2
                     place = random.choice(list(places_for_child))
+
                     self._grid[place[0], place[1]] = self.birth(
                         place[0], place[1], child_lang)
 
@@ -103,6 +108,7 @@ class CellularAutomaton:
         moves the person at x, y to a nearby free cell
         """
         possible_moves = []
+
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if not (i == 0 and j == 0)\
@@ -110,65 +116,64 @@ class CellularAutomaton:
                         and len(self._grid[y+i]) > x+j >= 0\
                         and not self._grid[y + i, x + j]:
                     possible_moves.append((y+i, x+j))
+
         if possible_moves:
             move = random.choice(possible_moves)
-            moved = Person(self._grid[y, x].age, move, self._grid[y, x].state)
+            moved = Person(self._grid[y, x].age_group, move, self._grid[y, x].state)
             moved.transition_prob = self._grid[y, x].transition_prob
+            moved.age = self._grid[y, x].age
+
             self._grid[move[0], move[1]] = moved
             self._grid[y, x] = None
 
     def evolve(self):
         '''
         Iterates over all the people in the system and changes their state
-        according to the neighbours. Also making people on the grid older and simulates
-        birth and death. 1 tick of evolve method means 1 year.
+        according to the neighbours. Also making people on the grid older and
+        simulates birth and death. 1 tick of evolve method means 1 year.
         '''
-        young_death_prob = 0.001
-        adult_death_prob = 0.005
-        senior_death_prob = 0.01
-        for row in self._grid:
-            for person in row:
-                if person is not None:
-                    coords = person.get_coords()
-                    y, x = coords[0], coords[1]
-                    person.transition_prob += \
-                        self.get_neighbours_affect(*person.coordinates)
-                    person.age_transition += 1
-                    death = random.random()
-                    if person.age == 0:
-                        if death < young_death_prob:
-                            self.death(y, x)
-                        if person.age_transition == 24:
-                            person.age = 1
-                            person.age_transiion = 0
-                        continue
-                    if person.age == 1:
-                        if death < adult_death_prob:
-                            self.death(y, x)
-                        if person.age_transition == 31:
-                            person.age = 2
-                            person.age_transition = 0
-                        continue
-                    if person.age == 2:
-                        # elders have bigger chance to die with each year. Sad reality
-                        senior_death_prob += 0.001
-                        if death < senior_death_prob:
-                            self.death(y, x)
+        death_prob_dict = {
+            Person.YOUTH: 0.001,
+            Person.ADULT: 0.005,
+            Person.SENIOR: 0.01
+        }
 
         for row in self._grid:
             for person in row:
-                if person is not None:
+                if person:
+                    coords = person.get_coords()
+                    y, x = coords[0], coords[1]
+
+                    person.transition_prob += \
+                        self.get_neighbours_affect(y, x)
+
+                    person.age += 1
+
+                    if 55 >= person.age >= 24:
+                        person.age_group = Person.ADULT
+                    elif 55 < person.age:
+                        person.age_group = Person.SENIOR
+
+                    death = random.random()
+
+                    if death < death_prob_dict[person.age_group]:
+                        self.death(y, x)
+
+        for row in self._grid:
+            for person in row:
+                if person:
                     prob = random.random()
                     person.change_state(prob)
+
                     prob = random.random()
-                    if prob < 1/(2**(person.age+2)):
+                    if prob < 1/(2**(person.age_group+2)):
                         self.move(*person.coordinates)
 
     def birth(self, y, x, parent_lang):
         """
-        Primitive example
+        Create a new Person with the language of parents
         """
-        return Person(0, (y, x), parent_lang)
+        return Person(Person.YOUTH, (y, x), parent_lang)
 
     def death(self, y, x):
         self._grid[y, x] = None
