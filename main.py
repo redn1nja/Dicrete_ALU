@@ -10,7 +10,7 @@ import numpy as np
 
 
 def main():
-    ca = CellularAutomaton(100, 100, 0.5, 0.3, 0.3, 0.6)
+    ca = CellularAutomaton(30, 30, 0.4, 0.3, 0.5, 0.5)
     grid = ca.get_grid()
 
     fig, ax = plt.subplots()

@@ -73,20 +73,24 @@ class CellularAutomaton:
                         affect -= 0.0625
                     elif self._grid[y + i, x + j].state == Person.ACTIVE_RU:
                         affect -= 0.125
-                    affect *= 1 + self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age]
+                    affect *= self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age]
+                    self.marriage(y, y+i, x, x+j)
                     
-                    lang_delta = abs(self._grid[y,x].state - self._grid[y+i,x+j].state)+1
-                    chance_to_pair = 1/(25*lang_delta)
-                    if random.random()<chance_to_pair and self._grid[y,x].age == 1 and self._grid[y+i,x+j].age == 1:
-                        if not self._grid[y,x].infamily and not self._grid[y+i,x+j].infamily:
-                            self._grid[y,x].infamily = True
-                            self._grid[y+i,x+j].infamily = True
-                            places_for_child = self.get_clear_surroundings(y,x).intersection(self.get_clear_surroundings(y+i, x+j))
-                            if places_for_child:
-                                child_lang = random.choice([self._grid[y,x].state, self._grid[y+i, x+j].state])
-                                place = random.choice(list(places_for_child))
-                                self._grid[place[0],place[1]] = self.birth(place[0], place[1], child_lang)
+                    
         return affect
+
+    def marriage(self, y, y1, x, x1):
+        lang_delta = abs(self._grid[y,x].state - self._grid[y1,x1].state)+1
+        chance_to_pair = 1/(15*lang_delta)
+        if random.random()<chance_to_pair and self._grid[y,x].age == 1 and self._grid[y1,x1].age == 1:
+            if not self._grid[y,x].infamily and not self._grid[y1,x1].infamily:
+                self._grid[y,x].infamily = True
+                self._grid[y1,x1].infamily = True
+                places_for_child = self.get_clear_surroundings(y,x).intersection(self.get_clear_surroundings(y1, x1))
+                if places_for_child:
+                    child_lang = (self._grid[y,x].state + self._grid[y1, x1].state)//2
+                    place = random.choice(list(places_for_child))
+                    self._grid[place[0],place[1]] = self.birth(place[0], place[1], child_lang)
 
     def move(self, y, x):
         """
