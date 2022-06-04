@@ -24,8 +24,8 @@ class Person:
     SURZHYK = 2
     PASSIVE_RU = 1
     ACTIVE_RU = 0
-    TRANSITION_LIST = ["active_ru", "passive_ru", "surzhyk",
-                       "passive_ua", "active_ua"]
+    TRANSITION_LIST = ["a_ru", "p_ru", "surz",
+                       "p_ua", "a_ua"]
     YOUTH = 0
     ADULT = 1
     SENIOR = 2
@@ -35,9 +35,6 @@ class Person:
         self.coordinates = coordinates
         self.state = state
         self.transition_prob = 0
-
-    def __str__(self) -> str:
-        return f'Person({self.age}, {self.coordinates}) is in {self.state} state'
 
     def change_state(self, prob):
         '''

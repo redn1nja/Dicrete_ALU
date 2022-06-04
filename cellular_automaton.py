@@ -7,7 +7,8 @@ from os import system, name
 
 class CellularAutomaton:
     '''
-    Class that represents a grid of people, who interact together and form a society.
+    Class that represents a grid of people,
+    who interact together and form a society.
     '''
     AUTHORITY_MATRIX = [[1, 0.5, 0.25],
                         [0.25, 0.5, 0.125],
@@ -15,8 +16,10 @@ class CellularAutomaton:
 
     def __init__(self, width, height, ua_percentage, youth_percentage,
                  adult_percentage, fill):
-        self._grid = np.array([[Person(self.generate_age(youth_percentage, adult_percentage), (j, i), self.generage_state(
-            ua_percentage)) if random.random() <= fill else None for i in range(width)] for j in range(height)])
+        self._grid = np.array([[Person(self.generate_age(youth_percentage, adult_percentage),
+                                       (j, i), self.generage_state(ua_percentage))
+                               if random.random() <= fill else None
+                               for i in range(width)] for j in range(height)])
 
     @staticmethod
     def generate_age(prob_y, prob_a):
@@ -44,7 +47,6 @@ class CellularAutomaton:
         the maximal delta for one step is +1.0, same goes with
         active prorussian with -1.0 per step.
         '''
-
         affect = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -97,7 +99,7 @@ class CellularAutomaton:
                         self.move(*person.coordinates)
 
     def __repr__(self):
-        return str(self._grid)
+        return "\n".join(" ".join(str(item) if item else "empt" for item in row) for row in self._grid)
 
 
 if __name__ == "__main__":
