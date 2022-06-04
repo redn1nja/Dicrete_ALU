@@ -10,7 +10,7 @@ import numpy as np
 
 
 def main():
-    ca = CellularAutomaton(100, 100, 0.5, 0.3, 0.3, 0.5)
+    ca = CellularAutomaton(20, 20, 0.5, 0.3, 0.3, 0.6)
     grid = ca.get_grid()
 
     fig, ax = plt.subplots()
@@ -52,7 +52,7 @@ def main():
         ax.imshow(states, cmap=cmap)
 
     anim = FuncAnimation(fig, animation, frames=iterate(),
-                         interval=10, repeat=False)
+                         interval=0, repeat=False)
 
     plt.show()
 
