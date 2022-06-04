@@ -76,8 +76,8 @@ class CellularAutomaton:
                     affect *= 1 + self.AUTHORITY_MATRIX[self._grid[y, x].age][self._grid[y+i, x+j].age]
                     
                     lang_delta = abs(self._grid[y,x].state - self._grid[y+i,x+j].state)+1
-                    chance_to_pair = 1/(250*lang_delta)
-                    if random.random()<chance_to_pair:
+                    chance_to_pair = 1/(25*lang_delta)
+                    if random.random()<chance_to_pair and self._grid[y,x].age == 1 and self._grid[y+i,x+j].age == 1:
                         if not self._grid[y,x].infamily and not self._grid[y+i,x+j].infamily:
                             self._grid[y,x].infamily = True
                             self._grid[y+i,x+j].infamily = True
