@@ -32,7 +32,7 @@ class CellularAutomaton:
 
     @staticmethod
     def generage_state(prob):
-        states_ukr = [Person.ACTIVE_UA, Person.PASSIVE_UA]
+        states_ukr = [Person.ACTIVE_UA, Person.PASSIVE_UA, Person.SURZHYK]
         states_negative = [Person.SURZHYK, Person.PASSIVE_RU, Person.ACTIVE_RU]
         if random.random() <= prob:
             return random.choice(states_ukr)
