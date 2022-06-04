@@ -35,6 +35,11 @@ class Person:
         self.coordinates = coordinates
         self.state = state
         self.transition_prob = 0
+        self.age_transition = 0 
+        self.infamily = False
+
+    def get_coords(self):
+        return self.coordinates
 
     def change_state(self, prob):
         '''

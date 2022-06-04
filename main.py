@@ -29,7 +29,7 @@ def main():
     cbar.set_ticks([0.4 + 0.8 * i for i in range(5)],
                    labels=['active ru speaker', 'passive ru speaker', 'surzhyk-speaking', 'pasive ua speaker', 'active ua speaker'])
     frames_data = list()
-    for i in range(50):
+    for i in range(500):
         frames_data.append(ca.get_grid().copy())
         ca.evolve()
 
