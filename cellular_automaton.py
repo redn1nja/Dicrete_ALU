@@ -72,16 +72,17 @@ class CellularAutomaton:
         possible_moves = []
         for i in range(-1, 2):
             for j in range(-1, 2):
-                try:
-                    if self._grid[y+i, x+j] is None:
-                        possible_moves.append((y+i, x+j))
-                        break
-                except IndexError:
-                    continue
-            if possible_moves:
-                move = random.choice(possible_moves)
-                self._grid[move[0], move[1]] = self._grid[x, y]
-                self._grid[x, y] = None
+                if not (i == 0 and j == 0)\
+                        and len(self._grid) > y+i >= 0\
+                        and len(self._grid[y+i]) > x+j >= 0\
+                        and not self._grid[y + i, x + j]:
+                    possible_moves.append((y+i, x+j))
+        if possible_moves:
+            move = random.choice(possible_moves)
+            moved = Person(self._grid[y, x].age, move, self._grid[y, x].state)
+            moved.transition_prob = self._grid[y, x].transition_prob
+            self._grid[move[0], move[1]] = moved
+            self._grid[y, x] = None
 
     def evolve(self):
         '''
@@ -99,6 +100,11 @@ class CellularAutomaton:
                 if person is not None:
                     prob = random.random()
                     person.change_state(prob)
+
+        for row in self._grid:
+            for person in row:
+                if person is not None:
+                    prob = random.random()
                     if prob < 1/(2**(person.age+2)):
                         self.move(*person.coordinates)
 
@@ -107,9 +113,9 @@ class CellularAutomaton:
 
 
 if __name__ == "__main__":
-    a = CellularAutomaton(8, 8, 0.5, 0.5, 0.2, 0.5)
-    for i in range(100):
+    a = CellularAutomaton(4, 5, 0.5, 0.5, 0.2, 0.7)
+    for i in range(10):
         system("cls" if name == "nt" else "clear")
         print(a)
         a.evolve()
-        sleep(0.5)
+        sleep(2)
