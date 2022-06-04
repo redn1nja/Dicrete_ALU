@@ -78,15 +78,15 @@ class CellularAutomaton:
                         affect -= 0.125
                     affect *= (1 + self.AUTHORITY_MATRIX[self._grid[y, x].age_group][self._grid[y+i, x+j].age_group])
                     affect /= num_neighbors
-                    # self.marriage(y, y+i, x, x+j)
+                    self.marriage(y, y+i, x, x+j)
         return affect
 
     def marriage(self, y, y1, x, x1):
         lang_delta = abs(self._grid[y, x].state - self._grid[y1, x1].state)+1
-        chance_to_pair = 1/(5*lang_delta)
+        chance_to_pair = 1/(2**lang_delta)
 
-        if random.random() < chance_to_pair and self._grid[y, x].age_group == Person.ADULT\
-                and self._grid[y1, x1].age_group == Person.ADULT:
+        if random.random() < chance_to_pair and self._grid[y, x].age_group in [Person.ADULT, Person.SENIOR]\
+                and self._grid[y1, x1].age_group in [Person.ADULT, Person.SENIOR]:
 
             if not self._grid[y, x].infamily and not self._grid[y1, x1].infamily:
                 self._grid[y, x].infamily = True
@@ -147,17 +147,17 @@ class CellularAutomaton:
                     person.transition_prob += \
                         self.get_neighbours_affect(y, x)
 
-                    # person.age += 1
+                    person.age += 1
 
-                    # if 55 >= person.age >= 24:
-                        # person.age_group = Person.ADULT
-                    # elif 55 < person.age:
-                        # person.age_group = Person.SENIOR
+                    if 55 >= person.age >= 24:
+                        person.age_group = Person.ADULT
+                    elif 55 < person.age:
+                        person.age_group = Person.SENIOR
 
-                    # death = random.random()
+                    death = random.random()
 
-                    # if death < death_prob_dict[person.age_group]:
-                        # self.death(y, x)
+                    if death < death_prob_dict[person.age_group]:
+                        self.death(y, x)
 
         for row in self._grid:
             for person in row:
@@ -177,6 +177,7 @@ class CellularAutomaton:
         return Person(Person.YOUTH, (y, x), parent_lang)
 
     def death(self, y, x):
+        print(f"death at {y, x}")
         self._grid[y, x] = None
 
     def __repr__(self):
