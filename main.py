@@ -43,12 +43,18 @@ def main():
                            'surzhyk-speaking', 'pasive ua speaker',
                            'active ua speaker'])
 
+    def check_monotonic(grid):
+        return all((j is None or j.state == 4) for row in grid for j in row) or\
+                all((j is None or j.state == 0) for row in grid for j in row)
+
     def iterate() -> iter:
-        while not all((j is None or j.state == 4) for row in ca.get_grid() for j in row) and\
-                not all((j is None or j.state == 0) for row in ca.get_grid() for j in row):
+        while not check_monotonic(ca.get_grid()):
             ca.evolve()
+            if check_monotonic(ca.get_grid()):
+                print('End of the Simulation! The Society Became Monotonic!')
+                return None
             yield ca.get_grid()
-        return None
+        
 
     def animation(grid):
         states = [[grid[i, j].state if grid[i, j] else np.nan for j in range(
