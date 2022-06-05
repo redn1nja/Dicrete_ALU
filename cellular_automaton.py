@@ -11,11 +11,11 @@ class CellularAutomaton:
     AUTHORITY_MATRIX = [[1, 0.5, 0.25],
                         [0.25, 0.5, 0.125],
                         [0.0625, 0.125, 0.25]]
-    BIRTHS = 0
-    DEATHS = 0
 
     def __init__(self, width, height, ua_percentage, youth_percentage,
                  adult_percentage, fill):
+        self.total_births = 0
+        self.total_deaths = 0
         self._grid = np.array([[Person(self.generate_age(youth_percentage, adult_percentage),
                                        (j, i), self.generage_state(ua_percentage))
                                if random.random() <= fill else None
@@ -174,12 +174,12 @@ class CellularAutomaton:
         Create a new Person with the language of parents
         """
         # print(f"new person at {y, x}")
-        self.BIRTHS += 1
+        self.total_births += 1
         return Person(Person.YOUTH, (y, x), parent_lang)
 
     def death(self, y, x):
         # print(f"death at {y, x}")
-        self.DEATHS += 1
+        self.total_deaths += 1
         self._grid[y, x] = None
 
     def __repr__(self):
@@ -188,4 +188,3 @@ class CellularAutomaton:
 
     def get_grid(self):
         return self._grid
-

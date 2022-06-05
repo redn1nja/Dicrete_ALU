@@ -56,8 +56,8 @@ def main():
 
         states = np.ma.array(states, mask=np.isnan(states))
 
-        death_patch = mpatches.Patch(label=f"Deaths: {ca.DEATHS}")
-        birth_patch = mpatches.Patch(label=f"Births: {ca.BIRTHS}")
+        death_patch = mpatches.Patch(label=f"Deaths: {ca.total_deaths}")
+        birth_patch = mpatches.Patch(label=f"Births: {ca.total_births}")
 
         leg = None
         leg = fig.legend(handles=[birth_patch, death_patch])
