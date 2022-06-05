@@ -34,6 +34,8 @@ def main():
 
     mappable = ax.imshow(states, cmap=cmap)
 
+    ax.set_title('Language Spread Simulation. Step 1')
+
     cbar = fig.colorbar(mappable=mappable, ax=ax, ticks=[i for i in range(5)])
 
     cbar.set_ticks([0.4 + 0.8 * i for i in range(5)],
@@ -58,11 +60,12 @@ def main():
         birth_patch = mpatches.Patch(label=f"Births: {ca.BIRTHS}")
 
         leg = None
-
         leg = fig.legend(handles=[birth_patch, death_patch])
 
+        step = int(ax.get_title().split(' ')[-1]) + 1
         ax.clear()
         ax.imshow(states, cmap=cmap)
+        ax.set_title(f'Language Spread Simulation. Step {step}')
 
     anim = FuncAnimation(fig, animation, frames=iterate(),
                          interval=0, repeat=False)
