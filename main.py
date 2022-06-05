@@ -31,8 +31,12 @@ def main():
     ax[0].clear()
     ax[0].set_frame_on(False)
     ax[0].set_axis_off()
-    ax[0].text(0, 0.9, f"Births: {ca.total_births}")
-    ax[0].text(0, 0.8, f"Deaths: {ca.total_deaths}")
+    ax[0].text(-0.2, 0.9, f"Births: {ca.total_births}")
+    ax[0].text(-0.2, 0.8, f"Deaths: {ca.total_deaths}")
+    ax[0].text(-0.2, 0.4, f'Ua speakers\n{ca.get_ua_ru_percentage()[0]}%')
+    ax[0].text(-0.2, 0.3, f'Ru speakers\n{ca.get_ua_ru_percentage()[1]}%')
+    ax[0].text(-0.2, 0.2, 'Surzhyk:\n'+\
+        f'{(100 - ca.get_ua_ru_percentage()[0] - ca.get_ua_ru_percentage()[1])}%')
 
     cmap = LinearSegmentedColormap.from_list(
         'ru-ua', ((1, 0, 0), (0, 0, 1)), N=5)
@@ -72,8 +76,12 @@ def main():
 
         ax[0].clear()
         ax[0].set_axis_off()
-        ax[0].text(0, 0.9, f"Births: {ca.total_births}")
-        ax[0].text(0, 0.8, f"Deaths: {ca.total_deaths}")
+        ax[0].text(-0.2, 0.9, f"Births: {ca.total_births}")
+        ax[0].text(-0.2, 0.8, f"Deaths: {ca.total_deaths}")
+        ax[0].text(-0.2, 0.4, f'Ua speakers\n{ca.get_ua_ru_percentage()[0]}%')
+        ax[0].text(-0.2, 0.3, f'Ru speakers\n{ca.get_ua_ru_percentage()[1]}%')
+        ax[0].text(-0.2, 0.2, 'Surzhyk:\n'+\
+            f'{round(100 - ca.get_ua_ru_percentage()[0] - ca.get_ua_ru_percentage()[1], 2)}%')
 
     anim = FuncAnimation(fig, animation, frames=iterate(),
                          interval=100, repeat=False)

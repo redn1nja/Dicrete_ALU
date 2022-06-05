@@ -182,6 +182,21 @@ class CellularAutomaton:
         self.total_deaths += 1
         self._grid[y, x] = None
 
+    def get_ua_ru_percentage(self):
+        total = 0
+        ua = 0
+        ru = 0
+        for row in self._grid:
+            for el in row:
+                if el:
+                    total += 1
+                    if el.state in (3,4):
+                        ua += 1
+                    elif el.state in (0,1):
+                        ru += 1
+        return round(100 * ua/total, 2), round(100 * ru/total, 2)
+                        
+
     def __repr__(self):
         return "\n".join(" ".join(str(item) if
                                   item else "empt" for item in row) for row in self._grid)
