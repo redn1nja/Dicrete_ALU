@@ -5,7 +5,6 @@ A module for matplotlib animated vizualization of the CA
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.patches as mpatches
 from cellular_automaton import CellularAutomaton
 import numpy as np
 
@@ -19,29 +18,33 @@ def main():
     ca = CellularAutomaton(*grid_size, ua_percentage, *age_dist, fill)
     grid = ca.get_grid()
 
-    fig, ax = plt.subplots()
-    plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
-
-    cmap = LinearSegmentedColormap.from_list(
-        'ru-ua', ((1, 0, 0), (0, 0, 1)), N=5)
+    fig = plt.figure(figsize=(8, 6))
+    fig.add_axes((0.05, 0.1, 0.1, 0.8))
+    fig.add_axes((0.2, 0.1, 0.6, 0.8))
+    fig.add_axes((0.85, 0.1, 0.04, 0.8))
+    ax = fig.get_axes()
 
     states = [[grid[i, j].state if grid[i, j] else np.nan for j in range(
         grid.shape[1])] for i in range(grid.shape[0])]
-
     states = np.ma.array(states, mask=np.isnan(states))
 
+    ax[0].clear()
+    ax[0].set_frame_on(False)
+    ax[0].set_axis_off()
+    ax[0].text(0, 0.9, f"Births: {ca.total_births}")
+    ax[0].text(0, 0.8, f"Deaths: {ca.total_deaths}")
+
+    cmap = LinearSegmentedColormap.from_list(
+        'ru-ua', ((1, 0, 0), (0, 0, 1)), N=5)
     cmap.set_bad((1, 1, 1), np.nan)
 
-    mappable = ax.imshow(states, cmap=cmap)
+    mappable = ax[1].imshow(states, cmap=cmap)
+    ax[1].set_title('Language Spread Simulation. Step 1')
 
-    ax.set_title('Language Spread Simulation. Step 1')
-
-    cbar = fig.colorbar(mappable=mappable, ax=ax, ticks=[i for i in range(5)])
-
+    cbar = fig.colorbar(mappable=mappable, cax=ax[2], ticks=[i for i in range(5)])
     cbar.set_ticks([0.4 + 0.8 * i for i in range(5)],
-                   labels=['active ru speaker', 'passive ru speaker',
-                           'surzhyk-speaking', 'pasive ua speaker',
-                           'active ua speaker'])
+                   labels=['active ru', 'passive ru',
+                           'surzhyk', 'passive ua', 'active ua'])
 
     def check_monotonic(grid):
         return all((j is None or j.state == 4) for row in grid for j in row) or\
@@ -62,19 +65,18 @@ def main():
 
         states = np.ma.array(states, mask=np.isnan(states))
 
-        death_patch = mpatches.Patch(label=f"Deaths: {ca.total_deaths}")
-        birth_patch = mpatches.Patch(label=f"Births: {ca.total_births}")
+        step = int(ax[1].get_title().split(' ')[-1]) + 1
+        ax[1].clear()
+        ax[1].imshow(states, cmap=cmap)
+        ax[1].set_title(f'Language Spread Simulation. Step {step}')
 
-        leg = None
-        leg = fig.legend(handles=[birth_patch, death_patch])
-
-        step = int(ax.get_title().split(' ')[-1]) + 1
-        ax.clear()
-        ax.imshow(states, cmap=cmap)
-        ax.set_title(f'Language Spread Simulation. Step {step}')
+        ax[0].clear()
+        ax[0].set_axis_off()
+        ax[0].text(0, 0.9, f"Births: {ca.total_births}")
+        ax[0].text(0, 0.8, f"Deaths: {ca.total_deaths}")
 
     anim = FuncAnimation(fig, animation, frames=iterate(),
-                         interval=0, repeat=False)
+                         interval=100, repeat=False)
     plt.show()
 
 
